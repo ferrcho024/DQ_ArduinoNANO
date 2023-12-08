@@ -1,7 +1,12 @@
 #include <Arduino.h>
-#include <freertos/FreeRTOS.h>
-#include <freertos/task.h>
-#include "freertos/queue.h"
+#include <Arduino_FreeRTOS.h>
+#include <FreeRTOSConfig.h>
+#include <FreeRTOSVariant.h>
+
+
+// #include <freertos/FreeRTOS.h>
+// #include <freertos/task.h>
+// #include "freertos/queue.h"
 
 
 #include "parameters.h"
@@ -194,12 +199,12 @@ void setup() {
   write_text_to_file(data, "fechaHora,pm25df,pm25nova");
   createMQTTClient();
 
-  // Crea dos tareas y las asigna a diferentes núcleos
-  xTaskCreatePinnedToCore(task1, "Task1", 10000, NULL, 1, NULL, 0);
-  xTaskCreatePinnedToCore(task2, "Task2", 10000, NULL, 1, NULL, 1);
+  // Crea dos tareas (ambas tareas quedan en el mismo nucleo porque el Arduino NANO BLE solo tiene 1 nucleo)
+  xTaskCreate(task1, "Task1", 10000, NULL, 1, NULL);
+  xTaskCreate(task2, "Task2", 10000, NULL, 1, NULL);
 
   // Iniciar el planificador de tareas
-  //vTaskStartScheduler();
+  vTaskStartScheduler();
 }
 
 void loop() {
